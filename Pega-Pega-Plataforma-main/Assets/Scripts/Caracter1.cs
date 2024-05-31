@@ -13,7 +13,6 @@ public class Caracter1 : MonoBehaviour
     public bool isJumping;
     public bool doubleJump;
 
-
     void Start()
     {
        rig = GetComponent<Rigidbody2D>();
@@ -24,54 +23,50 @@ public class Caracter1 : MonoBehaviour
     {
         Move();
         Jump();
-
-
     }
+
     void Move()
     {
-        Vector3 movement = new Vector3(Input.GetAxis("Horizontal"), 0f, 0f);
-        transform.position += movement * Time.deltaTime * Speed;
+        Vector3 movement = Vector3.zero;
 
-        if(Input.GetAxis("Horizontal") > 0f)
+        if (Input.GetKey(KeyCode.D))
         {
+            movement = new Vector3(1f, 0f, 0f);
+            transform.eulerAngles = new Vector3(0f, 0f, 0f);
             anim.SetBool("Walk", true);
-            transform.eulerAngles = new Vector3(0f,0f,0f);
         }
-
-        if(Input.GetAxis("Horizontal") < 0f)
+        else if (Input.GetKey(KeyCode.A))
         {
+            movement = new Vector3(-1f, 0f, 0f);
+            transform.eulerAngles = new Vector3(0f, 180f, 0f);
             anim.SetBool("Walk", true);
-            transform.eulerAngles = new Vector3(0f,180f,0f);
         }
-
-        if(Input.GetAxis("Horizontal") == 0f)
+        else
         {
             anim.SetBool("Walk", false);
         }
-        
 
+        transform.position += movement * Time.deltaTime * Speed;
     }
+
     void Jump()
     {
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.W))
         {
             if (!isJumping)
             {
-            rig.AddForce(new Vector2(0f, JumpForce), ForceMode2D.Impulse);
-            doubleJump = true;
-            anim.SetBool("Jump", true);
+                rig.AddForce(new Vector2(0f, JumpForce), ForceMode2D.Impulse);
+                doubleJump = true;
+                anim.SetBool("Jump", true);
             }
-            else
+            else if (doubleJump)
             {
-                if (doubleJump)
-                {
-                    rig.AddForce(new Vector2(0f, JumpForce), ForceMode2D.Impulse);
-                    doubleJump = false;
-                }
+                rig.AddForce(new Vector2(0f, JumpForce), ForceMode2D.Impulse);
+                doubleJump = false;
             }
+        }
     }
 
-    }
     void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.layer == 8)
@@ -80,9 +75,10 @@ public class Caracter1 : MonoBehaviour
             anim.SetBool("Jump", false);
         }
     }
+
     void OnCollisionExit2D(Collision2D collision)
     {
-        if(collision.gameObject.layer == 8) 
+        if (collision.gameObject.layer == 8)
         {
             isJumping = true;
         }
